@@ -58,7 +58,7 @@ function Home() {
           <Link to="/shop" className="font-mono text-xs uppercase text-primary">View all →</Link>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[products[0], products[2], products[9], products[10]].map((p) => <ProductCard key={p.slug} p={p} />)}
+          {[products[0], products[2], products[9], products[10]].filter((p): p is NonNullable<typeof p> => !!p).map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
       </section>
     </>
