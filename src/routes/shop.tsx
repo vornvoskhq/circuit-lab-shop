@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { products, categories } from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
 
-type S = { cat?: string; q?: string };
+type S = { cat?: string | undefined; q?: string | undefined };
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (s: Record<string, unknown>): S => ({
