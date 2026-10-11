@@ -18,7 +18,7 @@ export interface Product {
   key: { label: string; value: string }[];
   /** Full spec sheet */
   specs: { label: string; value: string }[];
-  datasheet?: string;
+  datasheet?: string | undefined;
   images: string[];
   datasheets: { label: string; url: string }[];
 }

@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { previews } from "@/lib/previews";
 
-export function CatalogPreviews({ category, query = "" }: { category?: string; query?: string }) {
+export function CatalogPreviews({ category, query = "" }: { category?: string | undefined; query?: string }) {
   const items = previews.filter((item) => (!category || item.category === category) && `${item.title} ${item.description} ${item.category}`.toLowerCase().includes(query.toLowerCase()));
   if (!items.length) return null;
   return <section className="mt-12 border-t border-border pt-8" aria-labelledby="catalog-previews">
