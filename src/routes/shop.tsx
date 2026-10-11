@@ -3,6 +3,9 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { products, categories } from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
+import { CatalogPreviews } from "@/components/CatalogPreviews";
+import { previewCategories } from "@/lib/previews";
+import { Button } from "@/components/ui/button";
 
 type S = { cat?: string | undefined; q?: string | undefined };
 
@@ -64,9 +67,9 @@ function Shop() {
           />
         </label>
         <div className="flex flex-wrap items-center gap-2">
-          <button className={chip(!cat)} onClick={() => nav({ search: (s) => ({ ...s, cat: undefined }) })}>All</button>
-          {categories.map((c) => (
-            <button key={c} className={chip(cat === c)} onClick={() => nav({ search: (s) => ({ ...s, cat: c }) })}>{c}</button>
+          <Button variant="outline" className={chip(!cat)} onClick={() => nav({ search: (s) => ({ ...s, cat: undefined }) })}>All</Button>
+          {[...categories, ...previewCategories].map((c) => (
+            <Button variant="outline" key={c} className={`${chip(cat === c)} h-auto whitespace-normal text-left`} onClick={() => nav({ search: (s) => ({ ...s, cat: c }) })}>{c}</Button>
           ))}
           <div className="ml-auto flex items-center gap-4">
             <label className="flex items-center gap-2 font-mono text-xs uppercase">
@@ -87,7 +90,8 @@ function Shop() {
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {list.map((p) => <ProductCard key={p.slug} p={p} />)}
       </div>
-      {list.length === 0 && <p className="py-20 text-center text-muted-foreground">No parts match. Try a different value or category.</p>}
+      {list.length === 0 && !previewCategories.includes(cat ?? "") && <p className="py-20 text-center text-muted-foreground">No parts match. Try a different value or category.</p>}
+      {!inStock && <CatalogPreviews category={cat} query={q} />}
     </div>
   );
 }

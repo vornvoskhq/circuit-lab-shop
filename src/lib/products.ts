@@ -1,6 +1,7 @@
 import varcap from "@/assets/varcap.jpg";
 import semis from "@/assets/semis.jpg";
 import rocker from "@/assets/rocker.jpg";
+import { productMedia } from "@/lib/product-media";
 
 export type Category = "Variable Capacitors" | "Semiconductors & Power" | "Electromechanical";
 
@@ -17,7 +18,9 @@ export interface Product {
   key: { label: string; value: string }[];
   /** Full spec sheet */
   specs: { label: string; value: string }[];
-  datasheet?: string;
+  datasheet?: string | undefined;
+  images: string[];
+  datasheets: { label: string; url: string }[];
 }
 
 const vc = (
@@ -30,7 +33,7 @@ const vc = (
   gangs: string,
   voltage: string,
   extra: { label: string; value: string }[] = [],
-): Product => ({
+): Omit<Product, "images" | "datasheets"> => ({
   slug,
   name,
   mfr,
@@ -56,7 +59,7 @@ const vc = (
   ],
 });
 
-export const products: Product[] = [
+const inventory: Omit<Product, "images" | "datasheets">[] = [
   vc("cardwell-zr-75-as", "Cardwell ZR-75-AS", "Cardwell", 64, 3, "7 – 75 pF", "Single", "1,000 V", [
     { label: "Plate spacing", value: "0.030 in" },
     { label: "Shaft", value: '1/4" front, rear extension' },
@@ -174,6 +177,17 @@ export const products: Product[] = [
     ],
   },
 ];
+
+export const products: Product[] = inventory.map((product) => {
+  const media = productMedia[product.slug];
+  return {
+    ...product,
+    image: media?.images[0] ?? product.image,
+    images: media?.images ?? [product.image],
+    datasheets: media?.datasheets ?? [],
+    datasheet: media?.datasheets[0]?.url,
+  };
+});
 
 export const categories: Category[] = ["Variable Capacitors", "Semiconductors & Power", "Electromechanical"];
 

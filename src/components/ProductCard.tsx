@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { fmt, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { Button } from "@/components/ui/button";
 
 export function ProductCard({ p }: { p: Product }) {
   const { add } = useCart();
@@ -18,11 +19,11 @@ export function ProductCard({ p }: { p: Product }) {
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">{p.mfr}</p>
           <h3 className="mt-1 text-lg font-semibold leading-tight">{p.name}</h3>
         </div>
-        <dl className="grid grid-cols-3 gap-px border border-border bg-border">
+        <dl className="space-y-1 border-y border-border py-3">
           {p.key.map((k) => (
-            <div key={k.label} className="bg-card p-2">
-              <dt className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">{k.label}</dt>
-              <dd className="mt-0.5 font-mono text-xs text-foreground">{k.value}</dd>
+            <div key={k.label} className="flex flex-wrap items-baseline gap-x-1 font-mono text-xs">
+              <dt className="text-muted-foreground">{k.label}:</dt>
+              <dd className="text-foreground">{k.value}</dd>
             </div>
           ))}
         </dl>
@@ -32,10 +33,10 @@ export function ProductCard({ p }: { p: Product }) {
             <p className="font-mono text-[10px] uppercase text-muted-foreground">{p.stock} in stock</p>
           </div>
           <div className="flex gap-2">
-            <Link to="/products/$slug" params={{ slug: p.slug }} className="border border-border px-3 py-2 font-mono text-xs uppercase hover:border-primary">
+            <Button asChild variant="outline" size="sm"><Link to="/products/$slug" params={{ slug: p.slug }} className="font-mono text-xs uppercase">
               Specs
-            </Link>
-            <button
+            </Link></Button>
+            <Button size="sm"
               onClick={() => {
                 add(p.slug);
                 toast.success(`${p.name} added to cart`);
@@ -43,7 +44,7 @@ export function ProductCard({ p }: { p: Product }) {
               className="bg-primary px-3 py-2 font-mono text-xs uppercase text-primary-foreground hover:bg-primary/85"
             >
               Add
-            </button>
+            </Button>
           </div>
         </div>
       </div>
