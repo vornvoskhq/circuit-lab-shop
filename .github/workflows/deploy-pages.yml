@@ -1,14 +1,12 @@
 name: Deploy GitHub Pages
 
 on:
-  # This repository still has branch-based Pages enabled. Let its Jekyll
-  # deployment finish first, then publish the compiled application afterward.
-  workflow_run:
-    workflows: ["pages build and deployment"]
-    types: [completed]
+  push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -57,6 +55,35 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Wait for the branch-based Pages build
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (context.eventName !== "push") return;
+
+            for (let attempt = 0; attempt < 40; attempt += 1) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                head_sha: context.sha,
+                per_page: 100,
+              });
+              const pagesBuild = data.workflow_runs.find((run) =>
+                run.name === "pages build and deployment" && run.head_sha === context.sha && run.event === "dynamic"
+              );
+
+              if (pagesBuild?.status === "completed") {
+                if (pagesBuild.conclusion !== "success") {
+                  core.setFailed(`The branch-based Pages build ended with ${pagesBuild.conclusion}.`);
+                }
+                return;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 10_000));
+            }
+
+            core.setFailed("Timed out waiting for the branch-based Pages build.");
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
