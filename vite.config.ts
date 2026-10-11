@@ -11,5 +11,8 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // GitHub Pages serves static files only, so ship a client-rendered shell and
+    // let the host's 404 document handle deep links such as /shop and /cart.
+    spa: { enabled: true },
   },
 });
