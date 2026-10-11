@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Factory, Network, KeyRound, Radar, Atom, Wallet } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/labs")({
   head: () => ({
@@ -23,20 +23,23 @@ const upcoming = [
 ];
 
 function Labs() {
+  const [inquiry, setInquiry] = useState("");
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
       <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">// Roadmap</p>
       <h1 className="mt-2 text-4xl font-semibold tracking-tight">Coming online</h1>
-      <div className="mt-8 grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+      <div id="upcoming" className="mt-8 grid scroll-mt-24 gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
         {upcoming.map(({ icon: I, t, d }) => (
           <div key={t} className="bg-background p-6">
             <I className="h-6 w-6 text-primary" />
             <h2 className="mt-4 font-semibold">{t}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{d}</p>
             <span className="mt-4 inline-block border border-border px-2 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">Soon</span>
+            <div className="mt-4 flex flex-wrap gap-2"><Button size="sm" variant="outline" onClick={() => setInquiry(t)}>Notify me</Button><Button size="sm" variant="ghost" onClick={() => setInquiry(t)}>Inquire</Button></div>
           </div>
         ))}
       </div>
+      {inquiry && <div className="mt-6 border-t border-border py-4" role="status"><h2 className="font-semibold">{inquiry}</h2><p className="mt-2 text-sm text-muted-foreground">Notifications and inquiries are not open yet.</p></div>}
 
       <p className="mt-20 font-mono text-xs uppercase tracking-[0.3em] text-primary">// Lab previews</p>
       <div className="mt-4 grid gap-6 lg:grid-cols-2">
@@ -63,8 +66,9 @@ function Labs() {
 function LabCard({ icon: I, partner, title, body, points, waitlist }: { icon: typeof Atom; partner: string; title: string; body: string; points: string[]; waitlist?: boolean }) {
   const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
+  const [mode, setMode] = useState<"notify" | "inquire" | null>(null);
   return (
-    <article className="relative overflow-hidden border border-border bg-card p-8">
+    <article id={partner === "Open Matter Labs" ? "open-matter-labs" : "adafruit-industries"} className="relative scroll-mt-24 overflow-hidden border border-border bg-card p-5 sm:p-8">
       <div className="grid-overlay absolute inset-0 opacity-40" />
       <div className="relative">
         <div className="flex items-center gap-3">
@@ -76,24 +80,23 @@ function LabCard({ icon: I, partner, title, body, points, waitlist }: { icon: ty
         <ul className="mt-4 space-y-1 font-mono text-sm">
           {points.map((p) => <li key={p}><span className="text-primary">▸</span> {p}</li>)}
         </ul>
-        <form
+        <div className="mt-6 flex flex-wrap gap-2"><Button variant="outline" onClick={() => setMode("notify")}>Notify me</Button><Button variant="outline" onClick={() => setMode("inquire")}>Inquire</Button></div>
+        {mode && <form
           className="mt-6 flex flex-col gap-2"
           onSubmit={(e) => {
             e.preventDefault();
-            toast.success(`You're on the ${partner} list — we'll be in touch.`);
-            setEmail("");
-            setMsg("");
           }}
         >
-          <label htmlFor={`e-${partner}`} className="font-mono text-xs uppercase">{waitlist ? "Join the waitlist" : "Notify me"}</label>
-          <div className="flex gap-2">
-            <input id={`e-${partner}`} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lab.org" className="flex-1 border border-border bg-background px-3 py-2 font-mono text-sm" />
-            <button className="bg-primary px-4 font-mono text-xs uppercase text-primary-foreground hover:bg-primary/85">{waitlist ? "Join" : "Notify"}</button>
+          <label htmlFor={`e-${partner}`} className="font-mono text-xs uppercase">{mode === "inquire" ? "Partner inquiry" : waitlist ? "Join the waitlist" : "Notify me"}</label>
+          <div className="flex flex-wrap gap-2">
+            <input id={`e-${partner}`} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@lab.org" className="min-w-0 flex-1 border border-border bg-background px-3 py-2 font-mono text-sm" />
           </div>
-          {waitlist && (
+          {mode === "inquire" && (
             <textarea value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Inquiry (optional) — volume, use case, questions" rows={2} className="border border-border bg-background px-3 py-2 text-sm" />
           )}
-        </form>
+          <p className="text-xs text-muted-foreground">Notifications and inquiries are not open yet. Nothing is submitted or saved.</p>
+          <Button disabled className="self-start">Opening soon</Button>
+        </form>}
       </div>
     </article>
   );

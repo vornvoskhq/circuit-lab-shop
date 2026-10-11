@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { FileText, Printer } from "lucide-react";
 import { getProduct, fmt } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { ProductGallery } from "@/components/ProductGallery";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/products/$slug")({
   loader: ({ params }) => {
@@ -35,17 +37,16 @@ export const Route = createFileRoute("/products/$slug")({
 
 function ProductPage() {
   const { slug } = Route.useLoaderData();
-  const p = getProduct(slug)!;
+  const p = getProduct(slug);
   const { add } = useCart();
   const [qty, setQty] = useState(1);
+  if (!p) return null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12">
       <Link to="/shop" className="font-mono text-xs uppercase text-muted-foreground hover:text-primary">← Inventory</Link>
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
-        <div className="border border-border bg-muted">
-          <img src={p.image} alt={p.name} width={816} height={816} className="aspect-square w-full object-cover" />
-        </div>
+        <ProductGallery key={p.slug} name={p.name} images={p.images} />
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">{p.category} · {p.mfr}</p>
           <h1 className="mt-2 text-4xl font-semibold tracking-tight">{p.name}</h1>
@@ -65,23 +66,18 @@ function ProductPage() {
           <div className="mt-4 flex gap-2">
             <label className="sr-only" htmlFor="qty">Quantity</label>
             <input id="qty" type="number" min={1} max={p.stock} value={qty} onChange={(e) => setQty(Math.max(1, +e.target.value || 1))} className="w-20 border border-border bg-background px-3 font-mono" />
-            <button onClick={() => { add(p.slug, qty); toast.success(`${qty} × ${p.name} added`); }} className="flex-1 bg-primary py-3 font-mono text-sm uppercase tracking-wider text-primary-foreground hover:bg-primary/85">
+            <Button onClick={() => { add(p.slug, qty); toast.success(`${qty} × ${p.name} added`); }} className="h-auto flex-1 py-3 font-mono text-sm uppercase tracking-wider">
               Add to cart
-            </button>
+            </Button>
           </div>
 
           <section className="mt-10" aria-labelledby="specs">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 id="specs" className="font-mono text-sm uppercase tracking-widest">Full spec sheet</h2>
               <div className="flex gap-2">
-                {p.datasheet && (
-                  <a href={p.datasheet} target="_blank" rel="noreferrer" className="flex items-center gap-1 border border-border px-3 py-1.5 font-mono text-xs uppercase hover:border-primary">
-                    <FileText className="h-3.5 w-3.5" /> Datasheet PDF
-                  </a>
-                )}
-                <button onClick={() => window.print()} className="flex items-center gap-1 border border-border px-3 py-1.5 font-mono text-xs uppercase hover:border-primary">
+                <Button variant="outline" size="sm" onClick={() => window.print()} className="font-mono text-xs uppercase">
                   <Printer className="h-3.5 w-3.5" /> Print
-                </button>
+                </Button>
               </div>
             </div>
             <table className="mt-3 w-full border border-border text-sm">
@@ -94,6 +90,12 @@ function ProductPage() {
                 ))}
               </tbody>
             </table>
+            {p.datasheets.length > 0 && <div className="mt-6 space-y-2">
+              <h3 className="font-mono text-xs uppercase text-muted-foreground">Datasheets & catalog PDFs</h3>
+              {p.datasheets.map((sheet) => <Button key={sheet.url} asChild variant="outline" className="h-auto w-full justify-start whitespace-normal py-3 text-left font-mono text-xs">
+                <a href={sheet.url} target="_blank" rel="noreferrer"><FileText className="shrink-0" /><span className="min-w-0 break-words">{sheet.label}</span></a>
+              </Button>)}
+            </div>}
           </section>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import hero from "@/assets/hero.jpg";
 import { products, categories } from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
+import { CatalogPreviews } from "@/components/CatalogPreviews";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -60,6 +61,7 @@ function Home() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[products[0], products[2], products[9], products[10]].filter((p): p is NonNullable<typeof p> => !!p).map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
+        <CatalogPreviews />
       </section>
     </>
   );
