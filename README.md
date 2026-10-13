@@ -1,20 +1,20 @@
 # Circuit Lab Shop
 
-Build a website ("Circuit Complete") to sell electronic components. 
+Build a website ("Circuit Complete") to sell electronic components.
 
 The site needs an easy to navigate, stylish, and hypermodern engineering aesthetic with an accessible Stripe payment system, shopping cart, and search/filter controls.
 
 Current stock is radio electronics parts populated from github.com/vornvoskhq/compwar with product images, header photos, and spec sheets:
+
 - Variable Capacitors: Cardwell ZR-75-AS, Dual Gang 289-42, Dual Gang 922111-2 (575pF), Hammarlund ES-675536-9, Johnson KS-16471L1, Knight 1255, Triple Gang 153210
 - Semiconductors & Power: 1N5402 Rectifier Diodes, PN2907A Transistor, LM317 Voltage Regulator
 - Electromechanical: Illuminated blue rocker switches
 
 The inventory should be well organized, displaying key characteristics from the spec sheets (ratings, capacitance range, surge current, tolerances) directly on the component cards, with a way for customers to view the full spec sheets and datasheets.
 
-Also include upcoming categories and partner preview sections:
+Also include upcoming categories:
+
 - Industrial electronics, CAN bus tools, physical and electronic entry tools, counter surveillance electronics
-- Lab preview for upcoming partnership with Open Matter Labs (terahertz varactor and thin layer deposition setup with QCM sensors)
-- Lab preview for upcoming partnership with Adafruit Industries (microcontroller embedded cold cash crypto wallet based on MIT CSAIL design) with an inquiry / notify-me waitlist.
 
 This project was built with [Lovable](https://lovable.dev).
 
